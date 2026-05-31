@@ -1,7 +1,5 @@
 // Variable Manager's code from Jeffalo and GarboMuffin helped so much with the tabs on this ext! Big thanks to them.
-// import MakerJs from "../../libraries/thirdparty/cs/maker.js";
 import * as opentype from "../../libraries/thirdparty/cs/opentype.min.mjs";
-// import "../../libraries/thirdparty/cs/bezier.js";
 
 var App = /** @class */ (function () {
     function App() {
