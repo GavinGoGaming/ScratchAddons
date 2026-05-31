@@ -15,6 +15,9 @@ button {
   align-items: center;
   padding: 4px;
   border-radius: 4px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 }
 .message-type-title:hover .btn-dropdown {
   background: var(--hover-highlight);
@@ -42,7 +45,6 @@ button {
 
 .message-type-title {
   font-size: 14px;
-  color: var(--content-text);
   padding: 6px;
   padding-inline-end: 9px;
   cursor: default;
@@ -124,9 +126,6 @@ button > .small-icon {
   .message-type-title-text {
     margin-inline-start: 10px;
   }
-}
-a.message-type-title-text {
-  color: var(--content-text);
 }
 .float-right {
   margin-inline-start: 6px;
@@ -231,8 +230,8 @@ a.message-type-title-text {
   font-weight: 500;
   user-select: none;
 }
-.comment:hover .reply-button-comment,
-.comment:hover .delete-btn {
+.comment:is(:hover, :focus-within) .reply-button-comment,
+.comment:is(:hover, :focus-within) .delete-btn {
   opacity: 1;
 }
 .reply-textarea {
@@ -329,7 +328,7 @@ a.message-type-title-text {
   user-select: none;
 }
 #bottom-bar > * {
-  padding: 8px 0;
+  margin: 8px 0;
 }
 #bottom-bar > a {
   font-weight: var(--brand-orange-min-font-weight);

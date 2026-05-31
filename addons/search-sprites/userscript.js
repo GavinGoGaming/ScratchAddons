@@ -27,8 +27,8 @@ export default async function ({ addon, console, msg }) {
       const visible =
         !query ||
         containsQuery(sprite.children[0].children[1].innerText) ||
-        (containsQuery(sprite.children[0].children[2].children[0].innerText) &&
-          sprite.children[0].classList.contains("sa-folders-folder"));
+        (sprite.children[0].classList.contains("sa-folders-folder") &&
+          containsQuery(sprite.children[0].children[2].children[0].innerText));
       sprite.style.display = visible ? "" : "none";
     }
   };
@@ -71,14 +71,14 @@ export default async function ({ addon, console, msg }) {
   addSmallStageClass();
 
   while (true) {
-    await addon.tab.waitForElement("div[class^='sprite-selector_items-wrapper']", {
+    await addon.tab.waitForElement("[class*='sprite-selector_items-wrapper_']", {
       markAsSeen: true,
       reduxEvents: ["scratch-gui/mode/SET_PLAYER", "fontsLoaded/SET_FONTS_LOADED", "scratch-gui/locales/SELECT_LOCALE"],
       reduxCondition: (state) => !state.scratchGui.mode.isPlayerOnly,
     });
 
-    spritesContainer = document.querySelector('[class^="sprite-selector_items-wrapper"]');
-    spriteSelectorContainer = document.querySelector('[class^="sprite-selector_sprite-selector"]');
+    spritesContainer = document.querySelector('[class*="sprite-selector_items-wrapper_"]');
+    spriteSelectorContainer = document.querySelector('[class*="sprite-selector_sprite-selector_"]');
     spriteSelectorContainer.appendChild(container);
     reset(); // Clear search box after going outside then inside
   }

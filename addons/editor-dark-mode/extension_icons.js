@@ -14,7 +14,7 @@ export default async function ({ addon, console }) {
       return textColor(addon.settings.get("categoryMenu"), iconUri, addon.self.dir + "/assets/translate_white.svg");
     }
 
-    if (!["music", "videoSensing", "text2speech"].includes(extensionId)) return iconUri;
+    if (!["music", "videoSensing", "faceSensing", "text2speech"].includes(extensionId)) return iconUri;
     const match = dataUriRegex.exec(iconUri);
     if (match) {
       const oldSvg = atob(match[1]);
@@ -22,7 +22,7 @@ export default async function ({ addon, console }) {
       const newHighContrastColor = textColor(addon.settings.get("categoryMenu"), "#000000", "#ffffff");
       const newSvg = oldSvg
         .replace(/#575e75|#4d4d4d/gi, "%text%")
-        .replace(/#000000|#000|black/gi, "%highContrastText%")
+        .replace(/#000000|#000|black|#231f20/gi, "%highContrastText%")
         .replace(/%text%/g, newColor)
         .replace(/%highContrastText%/g, newHighContrastColor);
       return `data:image/svg+xml;base64,${btoa(newSvg)}`;
@@ -37,10 +37,10 @@ export default async function ({ addon, console }) {
     );
     const oldCategoryCreateIconDom = ScratchContinuousCategory.prototype.createIconDom_;
     ScratchContinuousCategory.prototype.createIconDom_ = function () {
-      const oldIconUri = this.toolboxItemDef_.iconURI;
-      this.toolboxItemDef_.iconURI = recolorIcon(oldIconUri, this.getId());
+      const oldIconUri = this.iconURI;
+      this.iconURI = recolorIcon(oldIconUri, this.getId());
       const iconElement = oldCategoryCreateIconDom.call(this);
-      this.toolboxItemDef_.iconURI = oldIconUri;
+      this.iconURI = oldIconUri;
       return iconElement;
     };
   } else {

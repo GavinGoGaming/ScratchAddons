@@ -145,12 +145,6 @@ export default async function ({ addon, console, msg }) {
     }, speed * 1000);
   }
 
-  const updateIsFullScreen = () => {
-    const isFullScreen = addon.tab.redux.state.scratchGui.mode.isFullScreen;
-    document.documentElement.classList.toggle("sa-hide-flyout-not-fullscreen", !isFullScreen);
-  };
-  updateIsFullScreen();
-
   let didOneTimeSetup = false;
   function doOneTimeSetup() {
     if (didOneTimeSetup) {
@@ -177,9 +171,6 @@ export default async function ({ addon, console, msg }) {
           }
           break;
         }
-        case "scratch-gui/mode/SET_FULL_SCREEN":
-          updateIsFullScreen();
-          break;
       }
     });
 
@@ -302,7 +293,7 @@ export default async function ({ addon, console, msg }) {
         // scrolling should not be animated when opening the flyout in category click mode
         if (!scrollAnimation) {
           if (Blockly.registry)
-            this.workspace_.scrollbar.setY(this.scrollTarget); // new Blockly
+            this.getWorkspace().scrollbar.setY(this.scrollTarget); // new Blockly
           else this.scrollbar_.set(this.scrollTarget);
           this.scrollTarget = null;
           scrollAnimation = true;
@@ -313,8 +304,8 @@ export default async function ({ addon, console, msg }) {
     if (Blockly.registry) {
       // new Blockly
       const ContinuousFlyout = workspace.getToolbox().getFlyout().constructor;
-      const oldStepScrollAnimation = ContinuousFlyout.prototype.stepScrollAnimation_;
-      ContinuousFlyout.prototype.stepScrollAnimation_ = newStepScrollAnimation(oldStepScrollAnimation);
+      const oldStepScrollAnimation = ContinuousFlyout.prototype.stepScrollAnimation;
+      ContinuousFlyout.prototype.stepScrollAnimation = newStepScrollAnimation(oldStepScrollAnimation);
     } else {
       const oldStepScrollAnimation = Blockly.Flyout.prototype.stepScrollAnimation;
       Blockly.Flyout.prototype.stepScrollAnimation = newStepScrollAnimation(oldStepScrollAnimation);
@@ -359,7 +350,8 @@ export default async function ({ addon, console, msg }) {
       reduxEvents: [
         "scratch-gui/mode/SET_PLAYER",
         "scratch-gui/locales/SELECT_LOCALE",
-        "scratch-gui/theme/SET_THEME",
+        "scratch-gui/settings/SET_COLOR_MODE",
+        "scratch-gui/settings/SET_THEME",
         "fontsLoaded/SET_FONTS_LOADED",
       ],
       reduxCondition: (state) => !state.scratchGui.mode.isPlayerOnly,
@@ -410,7 +402,7 @@ export default async function ({ addon, console, msg }) {
     if (Blockly.registry) toolbox = document.querySelector(".blocklyToolbox");
     else toolbox = document.querySelector(".blocklyToolboxDiv");
 
-    const addExtensionButton = document.querySelector("[class^=gui_extension-button-container_]");
+    const addExtensionButton = document.querySelector("[class*=extension-button_extension-button-container_]");
 
     for (let element of [toolbox, addExtensionButton, flyOut, scrollBar]) {
       element.onmouseenter = (e) => {

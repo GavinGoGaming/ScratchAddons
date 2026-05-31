@@ -128,6 +128,24 @@
   "easterEggs": {
     "message": "Easter Eggs"
   },
+  "editorFeature": {
+    "message": "Editor feature"
+  },
+  "playerFeature": {
+    "message": "Project player feature"
+  },
+  "websiteFeature": {
+    "message": "Website feature"
+  },
+  "themeAddon": {
+    "message": "Theme"
+  },
+  "popupFeature": {
+    "message": "Extension popup feature"
+  },
+  "easterEgg": {
+    "message": "Easter egg"
+  },
   "theme": {
     "message": "Theme:"
   },
@@ -143,6 +161,9 @@
   "moreSettings": {
     "message": "More Settings"
   },
+  "toggleSidebar": {
+    "message": "Toggle sidebar"
+  },
   "close": {
     "message": "Close"
   },
@@ -151,6 +172,9 @@
   },
   "resetToDefault": {
     "message": "Reset to default settings"
+  },
+  "importExport": {
+    "message": "Export/import settings"
   },
   "relatedAddons": {
     "message": "Related addons:"
@@ -164,8 +188,32 @@
   "viewLicenses": {
     "message": "View library licenses"
   },
+  "infoMessage": {
+    "message": "Information"
+  },
+  "noticeMessage": {
+    "message": "Notice"
+  },
+  "warningMessage": {
+    "message": "Warning"
+  },
+  "back": {
+    "message": "Go back"
+  },
+  "clear": {
+    "message": "Clear"
+  },
+  "collapse": {
+    "message": "Collapse"
+  },
+  "expand": {
+    "message": "Expand"
+  },
   "reset": {
     "message": "Reset"
+  },
+  "resetTo": {
+    "message": "Reset to..."
   },
   "default": {
     "message": "Default"
@@ -176,6 +224,21 @@
   "preview": {
     "message": "Preview"
   },
+  "addRow": {
+    "message": "Add row"
+  },
+  "addPresetRow": {
+    "message": "Add preset row"
+  },
+  "moveUp": {
+    "message": "Move up"
+  },
+  "moveDown": {
+    "message": "Move down"
+  },
+  "deleteRow": {
+    "message": "Delete row"
+  },
   "scratchAddonsTheme": {
     "message": "Scratch Addons theme"
   },
@@ -185,8 +248,14 @@
   "light": {
     "message": "Light"
   },
+  "switchLight": {
+    "message": "Switch to light theme"
+  },
   "dark": {
     "message": "Dark"
+  },
+  "switchDark": {
+    "message": "Switch to dark theme"
   },
   "loading": {
     "message": "Loading..."
@@ -263,11 +332,11 @@
   "extensionHasUpdated": {
     "message": "Scratch Addons has updated to v$1"
   },
-  "extensionUpdateImageAlt_v1_43": {
-    "message": "Screenshot of the code area context menu with the \"Clean up Blocks +\" option highlighted"
+  "extensionUpdateImageAlt_v1_45": {
+    "message": "Screenshot of dragging a costume in the costume list"
   },
-  "extensionUpdateInfo1_v1_43": {
-    "message": "The \"enhanced clean up tool\" addon, previously part of \"developer tools\", can now be toggled separately in $1. You can also choose whether to remove unused variables and lists.",
+  "extensionUpdateInfo1_v1_45": {
+    "message": "The new \"Improved dragging of costumes and sounds\" addon, which is enabled by default, makes the costume and sound lists scroll automatically when reordering items. Check it out in $1.",
     "description": "The placeholder is \"Scratch Addons settings\"."
   },
   "scratchAddonsSettings": {
@@ -276,8 +345,8 @@
   "sendFeedbackNotification": {
     "message": "send feedback"
   },
-  "extensionUpdateInfo2_v1_43": {
-    "message": "Other new features in this update are new settings for \"Scratch 3.0 \u2192 2.0\" and \"full areas\" and improved support for mobile devices."
+  "extensionUpdateInfo2_v1_45": {
+    "message": "This update also adds an optional confirmation for signing out of the Scratch website, in the \"Confirmations\" addon."
   },
   "readTheBlogPost": {
     "message": "Read the $1 for more information.",
@@ -285,6 +354,9 @@
   },
   "blogPost": {
     "message": "blog post"
+  },
+  "watchUpdateVideo": {
+    "message": "Watch update video"
   },
   "notAffiliated": {
     "message": "Scratch Addons is not affiliated with Scratch."

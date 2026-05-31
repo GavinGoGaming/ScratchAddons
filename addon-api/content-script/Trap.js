@@ -29,14 +29,14 @@ export default class Trap extends Listenable {
    * @private
    */
   get REACT_INTERNAL_PREFIXES() {
-    return ["__reactInternalInstance$", "__reactFiber$"];
+    return ["__reactFiber$"];
   }
 
   /**
    * @private
    */
   get REACT_INTERNAL_CONTAINER_PREFIXES() {
-    return ["__reactContainere$", "__reactContainer$"];
+    return ["__reactContainer$"];
   }
 
   _getBlocksComponent(wrapper) {
@@ -52,7 +52,7 @@ export default class Trap extends Listenable {
     const editorMode = this._getEditorMode();
     if (!editorMode || editorMode === "embed")
       throw new Error(`Cannot access Blockly on ${editorMode} page (${location.pathname})`);
-    const BLOCKS_CLASS = '[class^="gui_blocks-wrapper"]';
+    const BLOCKS_CLASS = '[class*="gui_blocks-wrapper_"]';
     let elem = document.querySelector(BLOCKS_CLASS);
     if (!elem) {
       throw new Error("Could not find workspace element, is the page in editor mode?");
@@ -64,7 +64,7 @@ export default class Trap extends Listenable {
     const editorMode = this._getEditorMode();
     if (!editorMode || editorMode === "embed")
       throw new Error(`Cannot access Blockly on ${editorMode} page (${location.pathname})`);
-    const BLOCKS_CLASS = '[class^="gui_blocks-wrapper"]';
+    const BLOCKS_CLASS = '[class*="gui_blocks-wrapper_"]';
     let elem = document.querySelector(BLOCKS_CLASS);
     if (!elem) {
       elem = await this._waitForElement(BLOCKS_CLASS, {
@@ -153,7 +153,7 @@ export default class Trap extends Listenable {
     let toolState = internalState;
     let tool;
     while (toolState) {
-      const toolInstance = toolState.child.stateNode || toolState.child.child.stateNode; // React 16 || React 18
+      const toolInstance = toolState.child.child.stateNode;
       if (toolInstance.tool) {
         tool = toolInstance.tool;
         break;

@@ -71,17 +71,17 @@ export default async function ({ addon, console, msg }) {
     },
   });
   addon.tab.addBlock("\u200B\u200Bstart timer\u200B\u200B %s", {
-    args: ["content"],
+    args: [{ name: "label", default: msg("default-timer-label") }],
     displayName: msg("block-start-timer"),
-    callback: ({ content }, thread) => {
-      if (timingTab) timingTab.startTimer(content, thread.target.id, thread.peekStack());
+    callback: ({ label }, thread) => {
+      if (timingTab) timingTab.startTimer(label, thread.target.id, thread.peekStack());
     },
   });
   addon.tab.addBlock("\u200B\u200Bstop timer\u200B\u200B %s", {
-    args: ["content"],
+    args: [{ name: "label", default: msg("default-timer-label") }],
     displayName: msg("block-stop-timer"),
-    callback: ({ content }) => {
-      if (timingTab) timingTab.stopTimer(content);
+    callback: ({ label }) => {
+      if (timingTab) timingTab.stopTimer(label);
     },
   });
 
@@ -423,6 +423,20 @@ export default async function ({ addon, console, msg }) {
     return parts.join(" ");
   };
 
+  const getScratchBlockCategory = (jsonData) => {
+    if (jsonData.extensions?.includes("scratch_extension")) {
+      return "pen";
+    }
+
+    const colorExtension = jsonData.extensions?.find((extension) => extension.startsWith("colours_"));
+    return colorExtension
+      ? {
+          colours_event: "events",
+          colours_data_lists: "list",
+        }[colorExtension] || colorExtension.replace("colours_", "")
+      : null;
+  };
+
   const createBlockPreview = (targetId, blockId) => {
     const target = vm.runtime.getTargetById(targetId);
     if (!target) {
@@ -499,8 +513,7 @@ export default async function ({ addon, console, msg }) {
       if (!text) {
         return null;
       }
-      // jsonData.extensions is not guaranteed to exist
-      category = jsonData.extensions?.includes("scratch_extension") ? "pen" : jsonData.category;
+      category = getScratchBlockCategory(jsonData);
       const isStatement =
         (jsonData.extensions &&
           (jsonData.extensions.includes("shape_statement") ||
@@ -683,10 +696,14 @@ export default async function ({ addon, console, msg }) {
     ogSetVariableTo.call(this, args, util);
   };
 
+  // Add button after Scratch adds the Set Thumbnail button - otherwise the order will be wrong
+  await addon.tab.redux.waitForState((state) =>
+    ["SHOWING_WITH_ID", "SHOWING_WITHOUT_ID"].includes(state.scratchGui.projectState.loadingState)
+  );
   while (true) {
     await addon.tab.waitForElement(
       // Full screen button
-      '[class^="stage-header_stage-size-row"] [class^="button_outlined-button"], [class*="stage-header_unselect-wrapper_"] > [class^="button_outlined-button"]',
+      '[class*="stage-header_right"] > [class*="button_outlined-button_"]:last-child, [class*="stage-header_unselect-wrapper_"] > [class*="button_outlined-button_"]',
       {
         markAsSeen: true,
         reduxEvents: [

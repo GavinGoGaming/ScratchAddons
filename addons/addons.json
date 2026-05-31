@@ -9,7 +9,6 @@
   "scratch-messaging",
   "true-youtube-links",
   "progress-bar",
-  "remix-tree-button",
   "bitmap-copy",
   "more-links",
   "youtube-fullscreen",
@@ -67,7 +66,7 @@
   "editor-sounds",
   "transparent-orphans",
   "gamepad",
-  "fix-pasted-scripts",
+  "remove-curved-stage-border",
   "better-img-uploads",
   "ctrl-click-run-scripts",
   "redirect-mobile-forums-v2",
@@ -161,7 +160,9 @@
   "font-to-svg",
   "costume-editor-shortcuts",
   "live-read-topics",
+  "fix-costume-drag",
   "recolor-custom-blocks",
+  "totally-normal-modes",
 
   "// NEW ADDONS ABOVE THIS ↑↑",
   "// Note: these themes need this exact order to work properly,",
@@ -181,14 +182,13 @@
   "horizontal-mystuff-tabs",
   "// For editor:",
   "editor-dark-mode",
-  "stage-monitor",
   "editor-colored-context-menus",
   "hide-stage",
   "editor-stage-left",
   "editor-buttons-reverse-order",
   "fullscreen",
-  "remove-curved-stage-border",
   "columns",
   "editor-compact",
-  "editor-theme3"
+  "editor-theme3",
+  "stage-monitor"
 ]
