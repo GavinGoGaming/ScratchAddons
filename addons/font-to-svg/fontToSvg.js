@@ -123,6 +123,8 @@ var App = /** @class */ (function () {
         this.strokeWidthInput = elements.strokeWidthInput;
         this.strokeNonScalingCheckbox = elements.strokeNonScalingCheckbox;
         this.fillRuleInput = elements.fillRuleInput;
+        this.insertBtn = elements.insertBtn;
+        this.currentSvg = {};
 
         Object.values({
             unitType: {
@@ -136,7 +138,7 @@ var App = /** @class */ (function () {
             _this.addOption(_this.selectUnits, unit);
         });
     };
-    App.prototype.handleEvents = function () {
+    App.prototype.handleEvents = function (addon = null) {
         this.fileUpload.onchange = this.readUploadedFile;
         this.fileUploadRemove.onclick = this.removeUploadedFont;
         this.selectFamily.onchange = this.loadVariants;
@@ -157,6 +159,13 @@ var App = /** @class */ (function () {
             this.renderCurrent;
         this.copyToClipboardBtn.onclick = this.copyToClipboard;
         this.downloadButton.onclick = this.downloadSvg;
+        if (addon) {
+            this.insertBtn.onclick = () => {
+                if (this.currentSvg.svg) {
+                    this.insertIntoCostumes(addon);
+                }
+            }
+        }
     };
     App.prototype.$ = function (selector) {
         return document.querySelector(selector);
@@ -220,31 +229,56 @@ var App = /** @class */ (function () {
         this.renderDiv.innerHTML = svg;
         this.renderDiv.setAttribute('data-dxf', dxf);
         this.outputTextarea.value = svg;
+        this.currentSvg = { svg: svg, dxf: dxf, width: textModel.models['text'] ? textModel.models['text'].origin[0] + textModel.models['text'].width : 0, height: textModel.models['text'] ? textModel.models['text'].origin[1] + textModel.models['text'].height : 0, text: text };
     };
+    App.prototype.getCurrentFile = function () {
+        return new File(
+            [this.currentSvg.svg],
+            `f2s-${this.currentSvg.text || 'text'}.svg`,
+            { type: "image/svg+xml" }
+        )
+    };
+    App.prototype.insertIntoCostumes = async function (addon) { //better-img-uploads code helped a lot here
+        const spriteSelector = '[class*="sprite-selector_sprite-selector_"] [class*="action-menu_more-buttons_"]';
+        const stageSelector = '[class*="stage-selector_stage-selector_"] [class*="action-menu_more-buttons_"]';
+        const costumeSelector = '[data-tabs] > :nth-child(3) [class*="action-menu_more-buttons_"]';
+        let menu = await addon.tab.waitForElement(`${spriteSelector}, ${stageSelector}, ${costumeSelector}`, {
+            markAsSeen: true,
+            reduxCondition: (state) => !state.scratchGui.mode.isPlayerOnly,
+            reduxEvents: [
+                "scratch-gui/mode/SET_PLAYER",
+                "fontsLoaded/SET_FONTS_LOADED",
+                "scratch-gui/locales/SELECT_LOCALE",
+                "scratch-gui/navigation/ACTIVATE_TAB",
+            ],
+        });
+        const input = Object.assign(document.createElement("input"), {
+            accept: ".svg",
+            className: `${addon.tab.scratchClass(
+                "action-menu_file-input"
+            )}`,
+            type: "file",
+        });
+        let el = menu.querySelector('*:has([data-label="Upload Costume"]) input');
+        input.onchange = (e) => {
+            e.stopPropagation();
+            el.files = new FileList([this.getCurrentFile()]);
+            el.dispatchEvent(new e.constructor(e.type, e));
+        }
+    }
     return App;
 }());
 
+function FileList(arr = []) {
+    let filelist = new DataTransfer();
+    for (let file of arr) {
+        filelist.items.add(file);
+    }
+    return filelist.files;
+}
+
 export default async function ({ addon, console, msg }) {
-    const vm = addon.tab.traps.vm;
-
-    let preventUpdate = false;
     function addTabContent(holder) {
-        // coloris not needed
-        // const scripts = [
-        // { src: "https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js", type: "text/javascript" }
-        // ];
-
-        // const link = document.createElement("link");
-        // link.rel = "stylesheet";
-        // link.href = "https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css";
-        // holder.appendChild(link);
-
-        // scripts.forEach(({ src, type }) => {
-        //     const script = document.createElement("script");
-        //     script.src = src;
-        //     script.type = type;
-        //     holder.appendChild(script);
-        // });
         const createElement = (tag, options = {}) => {
             const element = document.createElement(tag);
             Object.entries(options).forEach(([key, value]) => {
@@ -342,11 +376,12 @@ export default async function ({ addon, console, msg }) {
 
         const copyToClipboardBtn = createElement('button', { id: 'sa-svg-maker-copy-to-clipboard-btn', className: 'sa-svg-maker-btn sa-svg-maker sa-svg-maker-hidden', innerHTML: 'Copy to Clipboard' });
         const downloadBtn = createElement('a', { id: 'sa-svg-maker-download-btn', className: 'sa-svg-maker-btn', innerHTML: `${msg('save')}` });
+        const insertBtn = createElement('a', { id: 'sa-svg-maker-download-btn', className: 'sa-svg-maker-btn', innerHTML: `Insert to Costume` });
         const createLinkBtn = createElement('a', { id: 'sa-svg-maker-create-link', className: 'sa-svg-maker-btn sa-svg-maker-hidden', innerHTML: 'Create Link' });
         const dxfBtn = createElement('a', { id: 'sa-svg-maker-dxf-btn', className: 'sa-svg-maker-btn sa-svg-maker-hidden', innerHTML: 'Download Dxf' });
 
         const buttonsContainer = createElement('div', { className: 'sa-svg-maker-buttons-container' });
-        buttonsContainer.append(copyToClipboardBtn, downloadBtn, createLinkBtn, dxfBtn);
+        buttonsContainer.append(copyToClipboardBtn, downloadBtn, createLinkBtn, dxfBtn, insertBtn);
 
         const textareaContainer = createElement('div', { className: 'sa-svg-maker-textarea-container' });
         textareaContainer.append(outputTextarea, buttonsContainer);
@@ -379,10 +414,11 @@ export default async function ({ addon, console, msg }) {
             strokeInput: inputStroke,
             strokeWidthInput: inputStrokeWidth,
             strokeNonScalingCheckbox: inputStrokeNonScaling,
-            fillRuleInput: fillRule
+            fillRuleInput: fillRule,
+            insertBtn: insertBtn,
         });
         app.getGoogleFonts('AIzaSyAOES8EmKhuJEnsn9kS1XKBpxxp-TgN8Jc', app); // comes from the orginal font2svg website, been in use for years
-        app.handleEvents();
+        app.handleEvents(addon);
     }
 
     const svgmaker = document.createElement("div");
