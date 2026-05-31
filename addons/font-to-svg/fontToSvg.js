@@ -1,7 +1,7 @@
 // Variable Manager's code from Jeffalo and GarboMuffin helped so much with the tabs on this ext! Big thanks to them.
-import MakerJs from "../../libraries/thirdparty/cs/maker.js";
+// import MakerJs from "../../libraries/thirdparty/cs/maker.js";
 import * as opentype from "../../libraries/thirdparty/cs/opentype.min.mjs";
-import "../../libraries/thirdparty/cs/bezier.js";
+// import "../../libraries/thirdparty/cs/bezier.js";
 
 var App = /** @class */ (function () {
     function App() {
@@ -212,24 +212,20 @@ var App = /** @class */ (function () {
         }
     };
     App.prototype.callMakerJs = function (font, text, size, union, filled, kerning, separate, bezierAccuracy, units, fill, stroke, strokeWidth, strokeNonScaling, fillRule) {
-        var textModel = new MakerJs.models.Text(font, text, size, union, false, bezierAccuracy, { kerning: kerning });
-        if (separate) {
-            for (var i in textModel.models) {
-                textModel.models[i].layer = i;
-            }
-        }
-        var svg = MakerJs.exporter.toSVG(textModel, {
-            fill: filled ? fill : undefined,
-            stroke: stroke || undefined,
-            strokeWidth: strokeWidth || undefined,
-            fillRule: fillRule || undefined,
-            scalingStroke: !strokeNonScaling,
-        });
-        var dxf = MakerJs.exporter.toDXF(textModel, { units: units, usePOLYLINE: true });
+        const path = font.getPath(text, 0, size, size);
+        const svgPath = path.toSVG(2);
+
+        const bbox = path.getBoundingBox();
+        const w = bbox.x2 - bbox.x1;
+        const h = bbox.y2 - bbox.y1;
+
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${bbox.x1} ${bbox.y1} ${w} ${h}">
+    <path d="${path.toPathData(2)}" fill="${filled ? fill : 'none'}" stroke="${stroke || 'none'}" stroke-width="${strokeWidth || 1}" fill-rule="${fillRule || 'nonzero'}"/>
+  </svg>`;
+
         this.renderDiv.innerHTML = svg;
-        this.renderDiv.setAttribute('data-dxf', dxf);
         this.outputTextarea.value = svg;
-        this.currentSvg = { svg: svg, dxf: dxf, width: textModel.models['text'] ? textModel.models['text'].origin[0] + textModel.models['text'].width : 0, height: textModel.models['text'] ? textModel.models['text'].origin[1] + textModel.models['text'].height : 0, text: text };
+        this.currentSvg = { svg, dxf: '', width: w, height: h, text };
     };
     App.prototype.getCurrentFile = function () {
         return new File(
