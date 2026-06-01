@@ -40,11 +40,6 @@ var App = /** @class */ (function () {
             _this.downloadButton.href = 'data:image/svg+xml;base64,' + SvgFile;
             _this.downloadButton.download = _this.textInput.value;
         };
-        this.downloadDxf = function () {
-            var dxfFile = window.btoa(_this.renderDiv.getAttribute('data-dxf'));
-            _this.dxfButton.href = 'data:application/dxf;base64,' + dxfFile;
-            _this.dxfButton.download = _this.textInput.value + '.dxf';
-        };
         this.copyToClipboard = function () {
             _this.outputTextarea.select();
             document.execCommand('copy');
@@ -232,33 +227,33 @@ var App = /** @class */ (function () {
             { type: "image/svg+xml" }
         )
     };
-    App.prototype.insertIntoCostumes = async function (addon) { //better-img-uploads code helped a lot here
-        const spriteSelector = '[class*="sprite-selector_sprite-selector_"] [class*="action-menu_more-buttons_"]';
-        const stageSelector = '[class*="stage-selector_stage-selector_"] [class*="action-menu_more-buttons_"]';
-        const costumeSelector = '[data-tabs] > :nth-child(3) [class*="action-menu_more-buttons_"]';
-        let menu = await addon.tab.waitForElement(`${spriteSelector}, ${stageSelector}, ${costumeSelector}`, {
-            markAsSeen: true,
-            reduxCondition: (state) => !state.scratchGui.mode.isPlayerOnly,
-            reduxEvents: [
-                "scratch-gui/mode/SET_PLAYER",
-                "fontsLoaded/SET_FONTS_LOADED",
-                "scratch-gui/locales/SELECT_LOCALE",
-                "scratch-gui/navigation/ACTIVATE_TAB",
-            ],
-        });
-        const input = Object.assign(document.createElement("input"), {
-            accept: ".svg",
-            className: `${addon.tab.scratchClass(
-                "action-menu_file-input"
-            )}`,
-            type: "file",
-        });
-        let el = menu.querySelector('*:has([data-label="Upload Costume"]) input');
-        input.onchange = (e) => {
-            e.stopPropagation();
-            el.files = new FileList([this.getCurrentFile()]);
-            el.dispatchEvent(new e.constructor(e.type, e));
+    App.prototype.insertIntoCostumes = async function (addon) {
+        const vm = addon.tab.traps.vm;
+        const svgCode = this.currentSvg.svg;
+        const storage = vm.runtime.storage;
+
+        const asset = storage.createAsset(
+            storage.AssetType.ImageVector,
+            storage.DataFormat.SVG,
+            new TextEncoder().encode(svgCode),
+            null,
+            true
+        );
+
+        var stripText = this.currentSvg.text.replace(/\s/g, '');
+        if (stripText.length === 0) {
+            stripText = 'text';
         }
+
+        const costumes = vm.editingTarget.sprite.costumes;
+        const newCostume = {
+            assetId: asset.assetId,
+            name: `${stripText} ${costumes.length + 1}`,
+            dataFormat: storage.DataFormat.SVG,
+            asset,
+            md5: `${asset.assetId}.${storage.DataFormat.SVG}`,
+        };
+        costumes.push(newCostume);
     }
     return App;
 }());
@@ -370,7 +365,7 @@ export default async function ({ addon, console, msg }) {
 
         const copyToClipboardBtn = createElement('button', { id: 'sa-svg-maker-copy-to-clipboard-btn', className: 'sa-svg-maker-btn sa-svg-maker sa-svg-maker-hidden', innerHTML: 'Copy to Clipboard' });
         const downloadBtn = createElement('a', { id: 'sa-svg-maker-download-btn', className: 'sa-svg-maker-btn', innerHTML: `${msg('save')}` });
-        const insertBtn = createElement('a', { id: 'sa-svg-maker-download-btn', className: 'sa-svg-maker-btn', innerHTML: `Insert to Costume` });
+        const insertBtn = createElement('a', { id: 'sa-svg-maker-download-btn', className: 'sa-svg-maker-btn', innerHTML: `Insert to Sprite` });
         const createLinkBtn = createElement('a', { id: 'sa-svg-maker-create-link', className: 'sa-svg-maker-btn sa-svg-maker-hidden', innerHTML: 'Create Link' });
         const dxfBtn = createElement('a', { id: 'sa-svg-maker-dxf-btn', className: 'sa-svg-maker-btn sa-svg-maker-hidden', innerHTML: 'Download Dxf' });
 
